@@ -211,6 +211,6 @@ I really enjoyed this mini project! It was really interesting to analyse and vis
 
 I would have liked investigate other entertainment mediums such as Netflix, Amazon Prime, Spotify etc. to see how the number of users on these platforms changed throughout 2020 but sadly I could not find any available data to facilitate this. Maybe in the future. 
 
-The repo for this project can be found [here](https://github.com/jarod-wilson/psy6422_project). 
+The repo for this project can be found [here](https://github.com/jarod-wilson/psy6422). 
 
 
