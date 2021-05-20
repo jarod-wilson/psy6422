@@ -1,0 +1,216 @@
+---
+title: "How COVID-19 affected gaming habits"
+author: "Jarod Wilson"
+date: "10/03/2021"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Background and Motivation
+The ongoing **COVID-19 pandemic**, also known as **the coronavirus**, has fundamentally changed the way in which people live their lives. There have been multiple lockdowns and changes to working patterns, but ultimately people were given a clear message: **stay at home**.  
+
+With people spending more time at home, people will have spent more time enjoying hobbies that they may have, for example playing computer games. [SteamDB](https://steamdb.info/) is a third party online tool and database providing a huge amount of data about the video game distribution service **Steam**. Particularly of interest to me is the data about the number of daily concurrent users and daily users actively playing a game, which can be accessed [here](https://steamdb.info/app/753/graphs/).
+
+## Setup and Data Origins
+First we'll load the packages that we'll be using for this project.
+
+```{r packages, message = FALSE}
+
+library(tidyverse)
+library(here)
+library(knitr)
+library(lubridate)
+library(ggdark)
+library(ggtext)
+
+```
+
+Next we need to import the data.
+
+```{r import data}
+
+df <- read.csv(here("raw_data", "steam_users.csv"))
+
+```
+
+And we'll then have a look at the first few lines of the data.
+
+```{r head}
+
+head(df)
+
+```
+ And the last few lines.  
+ 
+``` {r tail}
+ 
+tail(df)
+ 
+```
+ 
+Apart from the names of the variables this dataset is already relatively well organised, which is quite helpful. It includes a **date and time** spanning back to January 2004, as well the number of concurrent online **users** and **users in game** for each date. This analysis will be focusing solely on the year 2020.
+
+## Aims
+
+There are several questions I wanted to explore with this mini project:
+
+1. Did COVID-19 cause a noticeable change in the number of users and users in game on Steam when it was declared a pandemic, countries began entering national lockdwons etc.
+
+2. If there was a change, was it sustained throughout 2020 as countries began to ease restrictions and people began to return to work?
+
+## Data Preparation
+
+We'll start by renaming the columns to make them more suitable and in a better format. 
+
+```{r renaming columns, warning = FALSE}
+
+df <- df %>%
+ rename(date = DateTime,
+        users = Users,
+        in_game = In.Game)
+
+```
+
+We'll also remove the "time" part of the data in the **date** column so that it is easier to manage later.
+
+``` {r remove time from date_time, warning = FALSE}
+
+df$date <- as.Date(df$date, format="%Y-%m-%d %H:%M:%S")
+
+```
+
+For ease, we'll change values listed as 'NA' in the dataset to '0'.
+
+```{r changing NA to 0, warning = FALSE}
+
+df <- df %>%
+   mutate(users = replace(users,is.na(users),0))
+
+df <- df %>%
+   mutate(in_game = replace(in_game,is.na(in_game),0))
+
+```  
+
+One thing of note is that the number of users we are dealing with are very large, up to in the tens of millions. This could cause issues when it comes to visualisation of the data. Therefore it may be worth changing the values into something more manageable, such as having values in millions e.g. 14 million as opposed to 14,000,000. 
+
+```{r dividing all values by 1,000,000, warning = FALSE}
+
+df <- df %>%
+  mutate(users = users / 1000000)
+
+df <- df %>%
+  mutate(in_game = in_game / 1000000)
+
+```
+
+Now if we view the last few lines of the data, we can see that the column names are more suitable and in a better format, and the values of **users** and **in_game** are much more manageable.
+
+```{r tail2, warning = FALSE}
+
+tail(df)
+
+```
+
+For this purpose of this visualisation we are only interested in the values for each day in the year 2020, so we can exclude all other values. Although I am going to keep the original dataframe.
+
+``` {r filter data for the year 2020, warning = FALSE}
+
+df2 <- df %>%
+  select(date, users, in_game) %>%
+  filter(between(date, as.Date("2020-01-01"), as.Date("2020-12-31")))
+
+```
+
+## Data Visualisation
+
+A **line graph** will be the most suitable way of visualising this data.
+
+``` {r data visualisation - line graph, warning = FALSE, message = FALSE}
+
+# Drawing the plot
+g <- ggplot(df2, aes(x = date)) +
+  geom_line(aes(y = users), colour = "#0072B2") + 
+  geom_line(aes(y = in_game), color = "#D55E00") +
+
+# Customising and theming the plot
+  geom_vline(xintercept = as.Date("2020-03-13"), colour = "red") + # This adds a vertical line on the plot,
+  annotate(geom="text", x = as.Date("2020-07-01"), y = 15,         # and this line annotates it with text.
+            label = "COVID-19 is declared a pandemic by the WHO", fontface = "bold") +
+  scale_x_date(date_breaks = "1 month", 
+                     date_minor_breaks = "1 week", 
+                     date_labels = "%b %Y") +
+  dark_theme_bw() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    axis.title.x = element_blank(),
+    plot.title = element_markdown()) + 
+  
+# Using the package ggtext we can get the line colours in the title using HTML syntax, removing the need for a legend.
+  labs(title = "How the number of <span style='color:#0072B2;'>Steam users</span> 
+       and <span style='color:#D55E00;'>users in game</span> changed throughout 2020.",
+       caption = "Visualisation by Jarod Wilson | Data taken from www.SteamDB.com",
+       y = " Users in millions")
+g
+```
+
+## Conclusions 
+
+In relation to the questions I wanted to explore with this visualisation:
+
+1. There was a noticeable increase in the number of **users** and **users in game** on Steam as COVID-19 was declared a pandemic and in the months afterwards. This likely reflects a greater number of people looking for ways to spend their time as they stayed at home.
+
+2. The number of **users** and **users in game** started to decrease at the beginning of May, this likely reflects some countries beginning to unlock and ease some restrictions. This decrease continued from June through to August, but began to increase again from September onowards; likely reflecting countries re-introducing restrictions as the second wave of the virus hit.
+
+There also appears to be some of what I am going to call a "weekend effect." In January and February 2020 the number of **users** spiked regularly before returning to roughly the same amount; and the same can be seen for **users in game** throughout 2020. Closer inspection of the data reveals that these spikes occured on Fridays, Saturdays and Sundays. This suggests that at weekends more people are using Steam and playing games on it, which makes logical sense! I think this is a good example of how visulisation of data can reveal patterns that we may not have otherwised noticed.
+
+## Extras
+
+I wanted to use this mini project as an opportunity to try and expand my skills using R and ``ggplot2``. I particularly wanted to create a visualisation that has an element of interactivity to it, to try and do this I am going to use the ``plotly`` and ``gganimate`` packages.
+
+The ``plotly`` package helps improve the interactivity of ``ggplot2`` data visualisations with a number of features including allowing users to hover over data points, zoom into specific areas, pan back and forth through time etc. 
+
+```{r interactivity with ggplotly, warning = FALSE, message = FALSE}
+
+library(plotly)
+g_int <- ggplotly(g)
+
+g_int
+
+```
+
+The ``gganimate`` package allows for animation of ``ggplot2`` visualisation in a number of ways. For this example we are going to animate the plot based on time.
+
+``` {r data animation with gganimate, warning = FALSE}
+
+library(gganimate)
+g_anim <- g +
+  transition_reveal(date)
+
+animate(g_anim, end_pause = 50, duration = 20, fps = 10)
+
+```
+
+I really like both of these packages! They both add another level of detail to visualisations, and elements of interactivity arguably make them more engaging for some people. 
+
+With more time I would have liked to tweak a few things, such as changing the labels that appear when you hover over thee lines on the first plot and perhaps adding a pause during the animation of the second.
+
+## Things I have learnt about using R
+
+ * The ``limit`` option of the ``scale_x_date()`` function can be used to select a time frame in the data. This is another way of selecting a period within a set of data compared to using ``select`` and ``filter``. This is useful to know as there may be situations in which I wish to create several visualisations from the same data set but between differnt time periods, such as comparing months or years. It may be interesting to come back to this project later to look at the data for 2021 and see how it compares. 
+ 
+ * The range of packages available in R make analysis and visualisation of data very easy. It is likely that if you want to do something in R, there is a package for it. 
+
+## Summary
+
+I really enjoyed this mini project! It was really interesting to analyse and visualise some data that I was interested in completely from start to finish.
+
+I would have liked investigate other entertainment mediums such as Netflix, Amazon Prime, Spotify etc. to see how the number of users on these platforms changed throughout 2020 but sadly I could not find any available data to facilitate this. Maybe in the future. 
+
+The repo for this project can be found [here](https://github.com/jarod-wilson/psy6422_project). 
+
+
