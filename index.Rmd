@@ -197,7 +197,7 @@ animate(g_anim, end_pause = 50, duration = 20, fps = 10)
 
 I really like both of these packages! They both add another level of detail to visualisations, and elements of interactivity arguably make them more engaging for some people. 
 
-With more time I would have liked to tweak a few things, such as changing the labels that appear when you hover over thee lines on the first plot and perhaps adding a pause during the animation of the second.
+With more time I would have liked to tweak a few things, such as changing the labels that appear when you hover over the lines on the first plot and perhaps adding a pause during the animation of the second.
 
 ## Things I have learnt about using R
 
