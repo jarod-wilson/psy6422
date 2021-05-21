@@ -134,8 +134,8 @@ A **line graph** will be the most suitable way of visualising this data.
 
 # Drawing the plot
 g <- ggplot(df2, aes(x = date)) +
-  geom_line(aes(y = users), colour = "#0072B2") + 
-  geom_line(aes(y = in_game), color = "#D55E00") +
+  geom_line(aes(y = users), colour = "#0072B2") + # Drawing two seperate lines for users and users in game.
+  geom_line(aes(y = in_game), color = "#D55E00") + 
 
 # Customising and theming the plot
   geom_vline(xintercept = as.Date("2020-03-13"), colour = "red") + # This adds a vertical line on the plot,
@@ -144,17 +144,18 @@ g <- ggplot(df2, aes(x = date)) +
   scale_x_date(date_breaks = "1 month", 
                      date_minor_breaks = "1 week", 
                      date_labels = "%b %Y") +
-  dark_theme_bw() +
-  theme(
-    axis.text.x = element_text(angle = 45, hjust = 1),
-    axis.title.x = element_blank(),
-    plot.title = element_markdown()) + 
   
-# Using the package ggtext we can get the line colours in the title using HTML syntax, removing the need for a legend.
+  # With the package ggtext we can get the line colours in the title using HTML syntax.
   labs(title = "How the number of <span style='color:#0072B2;'>Steam users</span> 
        and <span style='color:#D55E00;'>users in game</span> changed throughout 2020.",
        caption = "Visualisation by Jarod Wilson | Data taken from www.SteamDB.com",
-       y = " Users in millions")
+       y = " Users in millions") +
+  dark_theme_bw() + # This uses the ggdark package to theme the plot with darker colours, which I personally prefer.
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1), 
+    axis.title.x = element_blank(),
+    plot.title = element_markdown()) # This line is necessary to get colours in the title of the plot.
+    
 g
 ```
 
@@ -191,7 +192,8 @@ library(gganimate)
 g_anim <- g +
   transition_reveal(date)
 
-animate(g_anim, end_pause = 50, duration = 20, fps = 10)
+# This line sets how long the anination should last, how fast it animates, and how long it pauses for at the end.
+animate(g_anim, duration = 20, fps = 10, end_pause = 50)
 
 ```
 
@@ -211,6 +213,6 @@ I really enjoyed this mini project! It was really interesting to analyse and vis
 
 I would have liked investigate other entertainment mediums such as Netflix, Amazon Prime, Spotify etc. to see how the number of users on these platforms changed throughout 2020 but sadly I could not find any available data to facilitate this. Maybe in the future. 
 
-The repo for this project can be found [here](https://github.com/jarod-wilson/psy6422). 
+The repo for this project can be found [here](https://github.com/jarod-wilson/psy6422).
 
 
