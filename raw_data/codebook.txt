@@ -1,0 +1,7 @@
+Data taken from: https://steamdb.info/app/753/graphs/
+
+DateTime Ð date and time of the associated values
+
+Users Ð the number of concurrent users online on Steam on a given day
+
+In.Game Ð the number of users playing any game through Steam on a given day
