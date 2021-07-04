@@ -1,5 +1,5 @@
 # How COVID-19 changed gaming habits
-Project completed as part of PSY6422 module at the University of Sheffield exploring how the COVID-19 pandemic has affected gaming habits.
+Project completed as part of the PSY6422 module at the University of Sheffield exploring how the COVID-19 pandemic has affected gaming habits.
 
 Full project is viewable at https://jarod-wilson.github.io/psy6422/.
 
