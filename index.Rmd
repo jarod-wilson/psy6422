@@ -3,7 +3,8 @@ title: "How COVID-19 affected gaming habits"
 author: "Jarod Wilson"
 date: "10/03/2021"
 output:
-  html_document: default
+  prettydoc::html_pretty:
+    theme: cayman
   pdf_document: default
 ---
 
