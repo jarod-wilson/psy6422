@@ -4,7 +4,7 @@ author: "Jarod Wilson"
 date: "10/03/2021"
 output:
   prettydoc::html_pretty:
-    theme: cayman
+    theme:: cayman
   pdf_document: default
 ---
 
